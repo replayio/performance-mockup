@@ -114,6 +114,17 @@ function getDescription(step: DependencyChainStep): string {
   return "Entry: " + step.code;
 }
 
+function isNetworkResponse(step: DependencyChainStep) {
+  switch (step.code) {
+    case "NetworkReceiveData":
+    case "NetworkReceiveResource":
+    case "WebSocketConnected":
+    case "WebSocketMessageReceived":
+      return true;
+  }
+  return false;
+}
+
 interface TimelineEntryProps {
   step: DependencyChainStep;
   previous: DependencyChainStep | null;
@@ -144,9 +155,11 @@ function TimelineEntry(props: TimelineEntryProps) {
     children.push(<div className="TimelineLocation">{`Location: ${url}:${line}`}</div>);
   }
 
-  return <span className="TimelineEntry">
+  const className = isNetworkResponse(step) ? "TimelineEntryNetwork" : "TimelineEntry";
+
+  return <div className={className}>
     {children}
-  </span>
+  </div>
 }
 
 function App() {

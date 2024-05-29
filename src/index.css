@@ -13,3 +13,13 @@ div.SummaryTitle {
 div.TimelineDescription {
   font-size: x-large;
 }
+
+div.TimelineEntry {
+  background-color: #b3d9ff;
+  margin: 5px 5px 5px 5px;
+}
+
+div.TimelineEntryNetwork {
+  background-color: #ffb3b3;
+  margin: 5px 5px 5px 5px;
+}
