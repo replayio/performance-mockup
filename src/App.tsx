@@ -74,21 +74,89 @@ function SummaryStatistics(props: SummaryProps) {
   </span>;
 }
 
+function getDescription(step: DependencyChainStep): string {
+  switch (step.code) {
+    case "DocumentBeginLoad":
+      return `Document begins loading`;
+    case "DocumentExecuteBlockedScript":
+      return `Executed a script blocked by other resources`;
+    case "DocumentInitiateNetworkRequest":
+      return `Request started for a URL referenced by the document`;
+    case "NetworkReceiveData":
+      return `Received ${step.numBytes} bytes of data`;
+    case "NetworkReceiveResource":
+      return `Received the entire resource`;
+    case "ScriptInitiateNetworkRequest":
+      return `Script started a network request`;
+    case "ScriptCreateWebSocket":
+      return `Script created a WebSocket`;
+    case "ScriptSendWebSocketMessage":
+      return `Script sent a message over a WebSocket`;
+    case "WebSocketConnected":
+      return `New WebSocket finished connecting`;
+    case "WebSocketMessageReceived":
+      return `Received a response to a WebSocket message`;
+    case "ReactHydrateRoot":
+      return `React hydration started`;
+    case "ReactRender":
+      return `React rendered a component`;
+    case "ReactReturnElement":
+      return `Component render returned a new component`;
+    case "ReactCreateElement":
+      return `Component render created a new component`;
+    case "ReactCallUseEffect":
+      return `Component render called useEffect()`;
+    case "ReactEffectFirstCall":
+      return `Effect function called for the first time`;
+    case "ReactCallSetState":
+      return `Script called setState()`;
+  }
+  return "Entry: " + step.code;
+}
+
 interface TimelineEntryProps {
   step: DependencyChainStep;
+  previous: DependencyChainStep | null;
 }
 
 function TimelineEntry(props: TimelineEntryProps) {
-  const { step } = props;
-  return <div>{"Entry: " + step.code}</div>
+  const { step, previous } = props;
+
+  const children: any[] = [];
+  children.push(<div className="TimelineDescription">{getDescription(step)}</div>);
+  children.push(<div className="TimelineTime">{"Time: " + step.time}</div>);
+
+  if (previous) {
+    const elapsed = (step.time ?? 0) - (previous.time ?? 0);
+    children.push(<div className="TimelineTime">{"Elapsed: " + elapsed}</div>);
+  }
+
+  if (step.point) {
+    children.push(<RecordingLink text="Point" point={step.point} time={step.time ?? 0}></RecordingLink>);
+  }
+
+  if ("url" in step) {
+    children.push(<div className="TimelineURL">{"URL: " + step.url}</div>);
+  }
+
+  if ("calleeLocation" in step && step.calleeLocation) {
+    const { url, line } = step.calleeLocation;
+    children.push(<div className="TimelineLocation">{`Location: ${url}:${line}`}</div>);
+  }
+
+  return <span className="TimelineEntry">
+    {children}
+  </span>
 }
 
 function App() {
   const summary = getResult().summaries[0];
 
   const entries: TimelineEntryProps[] = [];
+  let previous: DependencyChainStep | null = null;
   for (const step of summary.dependencySteps) {
-    entries.push({ step });
+    entries.push({ step, previous });
+    previous = step;
   }
 
   return (
