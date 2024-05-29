@@ -2,20 +2,21 @@ import { getResult } from "./input";
 import { DependencyChainStep, OriginSummary } from "./interfaceTypes";
 
 interface RecordingLinkProps {
+  className: string;
   text: string;
   point: string;
   time: number;
 }
 
 function RecordingLink(props: RecordingLinkProps) {
-  const { point, time, text } = props;
+  const { className, point, time, text } = props;
   const recordingId = getResult().spec.recordingId;
   const url = `https://app.replay.io/recording/${recordingId}?point=${point}&time=${time}`;
-  return <a className="RecordingLink" href={url} target="_blank">{text}</a>
+  return <a className={className} href={url} target="_blank">{text}</a>
 }
 
 function formatNumber(n: number) {
-  return n.toFixed(3);
+  return Math.round(n) + " ms";
 }
 
 function assert(v: any) {
@@ -56,7 +57,7 @@ function SummaryStatistics(props: SummaryProps) {
     <div className="SummaryTitle">Limiting Path</div>
     <div className="SummaryEntry">{"Start Time: " + formatNumber(startTime)}</div>
     <div className="SummaryEntry">{"End Time: " + formatNumber(endTime)}</div>
-    <RecordingLink text="End Point" point={triggerPoint} time={endTime}></RecordingLink>
+    <RecordingLink className="SummaryPoint" text="End Point" point={triggerPoint} time={endTime}></RecordingLink>
 
     <div className="SummaryTitle">Timing</div>
     <div className="SummaryEntry">{"Total: " + formatNumber(elapsed)}</div>
@@ -81,7 +82,7 @@ function getDescription(step: DependencyChainStep): string {
     case "DocumentExecuteBlockedScript":
       return `Executed a script blocked by other resources`;
     case "DocumentInitiateNetworkRequest":
-      return `Request started for a URL referenced by the document`;
+      return `Request started for a document URL`;
     case "NetworkReceiveData":
       return `Received ${step.numBytes} bytes of data`;
     case "NetworkReceiveResource":
@@ -91,11 +92,11 @@ function getDescription(step: DependencyChainStep): string {
     case "ScriptCreateWebSocket":
       return `Script created a WebSocket`;
     case "ScriptSendWebSocketMessage":
-      return `Script sent a message over a WebSocket`;
+      return `Script sent a WebSocket message`;
     case "WebSocketConnected":
-      return `New WebSocket finished connecting`;
+      return `New WebSocket connected`;
     case "WebSocketMessageReceived":
-      return `Received a response to a WebSocket message`;
+      return `Received a WebSocket response`;
     case "ReactHydrateRoot":
       return `React hydration started`;
     case "ReactRender":
@@ -135,15 +136,15 @@ function TimelineEntry(props: TimelineEntryProps) {
 
   const children: any[] = [];
   children.push(<div className="TimelineDescription">{getDescription(step)}</div>);
-  children.push(<div className="TimelineTime">{"Time: " + step.time}</div>);
+  children.push(<div className="TimelineTime">{"Time: " + formatNumber(step.time ?? 0)}</div>);
 
   if (previous) {
     const elapsed = (step.time ?? 0) - (previous.time ?? 0);
-    children.push(<div className="TimelineTime">{"Elapsed: " + elapsed}</div>);
+    children.push(<div className="TimelineTime">{"Elapsed: " + formatNumber(elapsed)}</div>);
   }
 
   if (step.point) {
-    children.push(<RecordingLink text="Point" point={step.point} time={step.time ?? 0}></RecordingLink>);
+    children.push(<RecordingLink className="TimelineEntryPoint" text="Point" point={step.point} time={step.time ?? 0}></RecordingLink>);
   }
 
   if ("url" in step) {
@@ -175,7 +176,7 @@ function App() {
   return (
     <div className="App">
       <SummaryStatistics summary={summary}></SummaryStatistics>
-      <div className="SummaryTitle">Path Steps</div>
+      <div className="SummaryTitle">Steps</div>
       {
         entries.map(props => (<TimelineEntry {...props}></TimelineEntry>))
       }
