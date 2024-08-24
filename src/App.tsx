@@ -30,6 +30,7 @@ function App() {
           return (<OriginDisplay {...props}></OriginDisplay>);
         })
       }
+      <div className="Footer"></div>
     </div>
   );
 }

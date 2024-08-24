@@ -1,9 +1,22 @@
 import { RecordingLink } from "./RecordingLink";
-import { OriginSummary } from "../interfaceTypes";
+import { DependencyChainOrigin, OriginSummary } from "../interfaceTypes";
 import { assert, formatTime } from "../utils";
 
 // Displays overall information about performance for behavior triggered
 // by an originating event.
+
+function getOriginTitle(origin: DependencyChainOrigin) {
+  switch (origin.kind) {
+    case "documentLoad":
+      return "Initial Document Load";
+    case "dispatchEvent":
+      return `User Event ${origin.eventType}`;
+    case "resize":
+      return "User Resized Window";
+    case "other":
+      return "Unknown Origin";
+  }
+}
 
 interface OriginSummaryProps {
   summary: OriginSummary;
@@ -24,6 +37,7 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
     timerTime,
     reactSliceTime,
     numNetworkRoundTrips,
+    origin,
   } = summary;
 
   assert(!workerThreadTime);
@@ -33,14 +47,15 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
   const timeCommit = reactSliceTime["Commit"] ?? 0;
   const timeFlushPassiveEffects = reactSliceTime["FlushPassiveEffects"] ?? 0;
 
+  const title = getOriginTitle(origin);
+
   return <span>
-    <div className="SummaryTitle">Limiting Path</div>
-    <div className="SummaryEntry">{"Start Time: " + formatTime(startTime)}</div>
-    <div className="SummaryEntry">{"End Time: " + formatTime(endTime)}</div>
+    <div className="OriginTitle">{ title }</div>
+    <div className="OriginEntry">{"Time: " + formatTime(startTime)}</div>
+    <div className="OriginEntry">{"Elapsed: " + formatTime(elapsed)}</div>
     <RecordingLink className="SummaryPoint" text="End Point" point={triggerPoint} time={endTime}></RecordingLink>
 
     <div className="SummaryTitle">Timing</div>
-    <div className="SummaryEntry">{"Total: " + formatTime(elapsed)}</div>
     <div className="SummaryEntry">{"Network: " + formatTime(networkTime)}</div>
     <div className="SummaryEntry">{"Main Thread: " + formatTime(mainThreadTime)}</div>
     <div className="SummaryEntry">{"Scheduling: " + formatTime(schedulingTime)}</div>
