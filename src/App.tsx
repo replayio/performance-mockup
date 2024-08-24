@@ -1,5 +1,8 @@
-import { getResult } from "./input";
-import { DependencyChainStep, OriginSummary } from "./interfaceTypes";
+import { getRecordingId } from "./params";
+import { fetchResult } from "./result";
+import { assert } from "./utils";
+import { DependencyChainStep, OriginSummary, PerformanceAnalysisResult } from "./interfaceTypes";
+import { useState, useEffect } from "react";
 
 interface RecordingLinkProps {
   className: string;
@@ -10,19 +13,14 @@ interface RecordingLinkProps {
 
 function RecordingLink(props: RecordingLinkProps) {
   const { className, point, time, text } = props;
-  const recordingId = getResult().spec.recordingId;
+  const recordingId = getRecordingId();
+  assert(recordingId);
   const url = `https://app.replay.io/recording/${recordingId}?point=${point}&time=${time}`;
   return <a className={className} href={url} target="_blank">{text}</a>
 }
 
 function formatNumber(n: number) {
   return Math.round(n) + " ms";
-}
-
-function assert(v: any) {
-  if (!v) {
-    throw new Error("Assertion Failed!");
-  }
 }
 
 interface SummaryProps {
@@ -164,7 +162,23 @@ function TimelineEntry(props: TimelineEntryProps) {
 }
 
 function App() {
-  const summary = getResult().summaries[0];
+  const [result, setResult] = useState<string | PerformanceAnalysisResult>("initial");
+  useEffect(() => {
+    console.log("EFFECT_CALLED");
+    const recordingId = getRecordingId();
+    if (recordingId) {
+      setResult("Fetching results...");
+      fetchResult(recordingId).then(result => setResult(result));
+    } else {
+      setResult("recordingId URL param not specified");
+    }
+  }, []);
+
+  if (typeof result == "string") {
+    return <div className="Status">{ result }</div>;
+  }
+
+  const summary = result.summaries[0];
 
   const entries: TimelineEntryProps[] = [];
   let previous: DependencyChainStep | null = null;
