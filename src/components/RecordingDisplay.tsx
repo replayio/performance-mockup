@@ -4,6 +4,6 @@ import { RecordingLink } from "./RecordingLink";
 
 export function RecordingDisplay() {
   return <div className="RecordingInfo">
-    <RecordingLink className="DefaultRecordingLink" text="Recording" point={undefined} time={undefined}></RecordingLink>
+    <RecordingLink className="DefaultRecordingLink" text="Recording of PLACEHOLDER" point={undefined} time={undefined}></RecordingLink>
   </div>;
 }

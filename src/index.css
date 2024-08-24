@@ -6,6 +6,11 @@ body{
   margin: 0;
 }
 
+div.RecordingInfo {
+  font-size: xx-large;
+  margin: 10px;
+}
+
 div.Status {
   font-size: xx-large;
   margin: 10px;
