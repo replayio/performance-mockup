@@ -1,4 +1,4 @@
-import { RecordingLink } from "./RecordingLink";
+import { ExpandableScreenShot } from "./ExpandableScreenShot";
 import { DependencyChainOrigin, OriginSummary } from "../interfaceTypes";
 import { assert, formatTime } from "../utils";
 
@@ -10,7 +10,7 @@ function getOriginTitle(origin: DependencyChainOrigin) {
     case "documentLoad":
       return "Initial Document Load";
     case "dispatchEvent":
-      return `User Event ${origin.eventType}`;
+      return `User Event: ${origin.eventType}`;
     case "resize":
       return "User Resized Window";
     case "other":
@@ -51,43 +51,18 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
 
   const title = getOriginTitle(origin);
 
-  const containerStyle: any = {
-    position: 'relative',
-    display: 'inline-block',
-  };
-
-  let originImage;
-  let mouseLocationDiv;
+  let originScreenShotElement;
   if (originScreenShot) {
-    const src = `data:image/jpeg;base64,${originScreenShot.screen}`;
-    originImage = <img className="OriginImage" src={src}></img>;
-
-    if (originMouseLocation) {
-      const circleX = 50;
-      const circleY = 50;
-      const circleRadius = 20;
-      const circleColor = "red";
-      const circleStyle: any = {
-        position: 'absolute',
-        left: `${circleX - circleRadius}px`, // Adjust the position to center the circle
-        top: `${circleY - circleRadius}px`, // Adjust the position to center the circle
-        width: `${circleRadius * 2}px`,
-        height: `${circleRadius * 2}px`,
-        borderRadius: '50%',
-        backgroundColor: circleColor,
-        pointerEvents: 'none', // Ensures that the circle does not interfere with interactions on the image
-      };
-      mouseLocationDiv = <div style={circleStyle}></div>
-    }
+    originScreenShotElement = <ExpandableScreenShot title="Before" scaledScreenShot={originScreenShot} mouseLocation={originMouseLocation}></ExpandableScreenShot>
   }
+
+  const commitScreenShotElement = <ExpandableScreenShot title="After" scaledScreenShot={commitScreenShot} mouseLocation={undefined}></ExpandableScreenShot>;
 
   return <span>
     <div className="OriginTitle">{ title }</div>
-    <div style={containerStyle}>
-      {originImage}
-      {mouseLocationDiv}
-    </div>
-    <div className="OriginEntry">{"Time: " + formatTime(startTime)}</div>
+    {originScreenShotElement}
+    {commitScreenShotElement}
+    <div className="OriginEntry">{"Start Time: " + formatTime(startTime)}</div>
     <div className="OriginEntry">{"Elapsed: " + formatTime(elapsed)}</div>
 
     <div className="SummaryTitle">Timing</div>

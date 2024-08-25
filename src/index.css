@@ -61,6 +61,10 @@ div.Footer {
   margin-bottom: 30px;
 }
 
-img.OriginImage {
+div.ScreenShotTitle {
+  margin-left: 20px;
+}
+
+div.ScreenShot {
   margin: 10px 0px 10px 20px;
 }

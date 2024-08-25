@@ -178,6 +178,8 @@ export interface ScaledScreenShot {
   screen: string;
   originalHeight: number;
   originalWidth: number;
+  scaledHeight: number;
+  scaledWidth: number;
 }
 
 export interface MouseLocation {
