@@ -28,7 +28,6 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
   const {
     startTime,
     endTime,
-    triggerPoint,
     elapsed,
     networkTime,
     schedulingTime,
@@ -38,6 +37,9 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
     reactSliceTime,
     numNetworkRoundTrips,
     origin,
+    originScreenShot,
+    originMouseLocation,
+    commitScreenShot,
   } = summary;
 
   assert(!workerThreadTime);
@@ -49,11 +51,44 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
 
   const title = getOriginTitle(origin);
 
+  const containerStyle: any = {
+    position: 'relative',
+    display: 'inline-block',
+  };
+
+  let originImage;
+  let mouseLocationDiv;
+  if (originScreenShot) {
+    const src = `data:image/jpeg;base64,${originScreenShot.screen}`;
+    originImage = <img className="OriginImage" src={src}></img>;
+
+    if (originMouseLocation) {
+      const circleX = 50;
+      const circleY = 50;
+      const circleRadius = 20;
+      const circleColor = "red";
+      const circleStyle: any = {
+        position: 'absolute',
+        left: `${circleX - circleRadius}px`, // Adjust the position to center the circle
+        top: `${circleY - circleRadius}px`, // Adjust the position to center the circle
+        width: `${circleRadius * 2}px`,
+        height: `${circleRadius * 2}px`,
+        borderRadius: '50%',
+        backgroundColor: circleColor,
+        pointerEvents: 'none', // Ensures that the circle does not interfere with interactions on the image
+      };
+      mouseLocationDiv = <div style={circleStyle}></div>
+    }
+  }
+
   return <span>
     <div className="OriginTitle">{ title }</div>
+    <div style={containerStyle}>
+      {originImage}
+      {mouseLocationDiv}
+    </div>
     <div className="OriginEntry">{"Time: " + formatTime(startTime)}</div>
     <div className="OriginEntry">{"Elapsed: " + formatTime(elapsed)}</div>
-    <RecordingLink className="SummaryPoint" text="End Point" point={triggerPoint} time={endTime}></RecordingLink>
 
     <div className="SummaryTitle">Timing</div>
     <div className="SummaryEntry">{"Network: " + formatTime(networkTime)}</div>

@@ -21,9 +21,11 @@ function App() {
     return <div className="Status">{ result }</div>;
   }
 
+  const { recordingURL } = result;
+
   return (
     <div className="App">
-      <RecordingDisplay></RecordingDisplay>
+      <RecordingDisplay recordingURL={recordingURL}></RecordingDisplay>
       {
         result.summaries.map(summary => {
           const props = { summary };

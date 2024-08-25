@@ -60,3 +60,7 @@ div.TimelineEntryNetwork {
 div.Footer {
   margin-bottom: 30px;
 }
+
+img.OriginImage {
+  margin: 10px 0px 10px 20px;
+}

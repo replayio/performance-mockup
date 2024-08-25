@@ -1,3 +1,5 @@
+export const Version = 5;
+
 type ProtocolExecutionPoint = string;
 
 export interface PerformanceAnalysisSpec {
@@ -172,10 +174,22 @@ export interface DependencyChainOrigin {
   eventType?: string;
 }
 
+export interface ScaledScreenShot {
+  screen: string;
+  originalHeight: number;
+  originalWidth: number;
+}
+
+export interface MouseLocation {
+  clientX: number;
+  clientY: number;
+}
+
 export interface OriginSummary extends LimitingPathSummary {
   origin: DependencyChainOrigin;
-  commitElapsed: number;
-  triggerPoint: ProtocolExecutionPoint;
+  originScreenShot?: ScaledScreenShot;
+  originMouseLocation?: MouseLocation;
+  commitScreenShot: ScaledScreenShot;
 }
 
 export interface AnalysisPointError {
@@ -187,4 +201,5 @@ export interface PerformanceAnalysisResult {
   spec: PerformanceAnalysisSpec;
   summaries: OriginSummary[];
   errors: AnalysisPointError[];
+  recordingURL: string;
 }

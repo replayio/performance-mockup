@@ -1,4 +1,4 @@
-import { PerformanceAnalysisResult } from "./interfaceTypes";
+import { PerformanceAnalysisResult, Version } from "./interfaceTypes";
 
 // FIXME Enable cross origin accesses on static.replay.io performance results.
 function addCORSProxy(url: string) {
@@ -6,7 +6,7 @@ function addCORSProxy(url: string) {
 }
 
 export async function fetchResult(recordingId: string): Promise<PerformanceAnalysisResult | string> {
-  const jsonURL = addCORSProxy(`https://static.replay.io/performance/performance-${recordingId}.json`);
+  const jsonURL = addCORSProxy(`https://static.replay.io/performance/performance-v${Version}-${recordingId}.json`);
 
   let result;
   try {
@@ -17,7 +17,7 @@ export async function fetchResult(recordingId: string): Promise<PerformanceAnaly
 
   let json;
   try {
-    json = result.json();
+    json = await result.json();
   } catch (e) {
     return `Error decoding JSON ${jsonURL}`;
   }
