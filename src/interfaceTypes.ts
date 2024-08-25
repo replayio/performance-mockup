@@ -37,9 +37,19 @@ type DependencyChainStepInfo =
       url: string;
     }
   | {
-      // A script in a document begin execution after all other required
+      // A script in a document began execution after all other required
       // resources were received.
       code: "DocumentExecuteBlockedScript";
+      url: string;
+    }
+  | {
+      // A script in a document began execution after being downloaded.
+      code: "DocumentExecuteScript";
+      url: string;
+    }
+  | {
+      // A script in a document has been scheduled for async compilation.
+      code: "DocumentAsyncCompileScript";
       url: string;
     }
   | {
@@ -85,6 +95,10 @@ type DependencyChainStepInfo =
       code: "WebSocketMessageReceived";
     }
   | {
+      // A promise settled and its then/catch hooks were called.
+      code: "PromiseSettled";
+    }
+  | {
       // React hydration has started.
       code: "ReactHydrateRoot";
     }
@@ -112,6 +126,10 @@ type DependencyChainStepInfo =
       code: "ReactCallSetState";
     }
   | {
+      // A React external store triggered a rerender.
+      code: "ReactExternalStoreRerender";
+    }
+  | {
       // An application render function called useEffect().
       code: "ReactCallUseEffect";
     }
@@ -119,6 +137,10 @@ type DependencyChainStepInfo =
       // An effect hook is called for the first time after the original useEffect().
       code: "ReactEffectFirstCall";
       calleeLocation?: URLLocation;
+    }
+  | {
+      // A change which triggered a render led to a later commit.
+      code: "ReactRenderCommit";
     }
   | {
       code: "UnknownNode";

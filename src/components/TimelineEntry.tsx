@@ -16,6 +16,8 @@ function getDescription(step: DependencyChainStep): string {
       return `Received ${step.numBytes} bytes of data`;
     case "NetworkReceiveResource":
       return `Received the entire resource`;
+    case "DispatchInputEventHandler":
+      return `An input ${step.type} event was dispatched`;
     case "ScriptInitiateNetworkRequest":
       return `Script started a network request`;
     case "ScriptCreateWebSocket":
@@ -30,16 +32,22 @@ function getDescription(step: DependencyChainStep): string {
       return `React hydration started`;
     case "ReactRender":
       return `React rendered a component`;
+    case "ReactResumeSuspendedRender":
+      return `React resumed a suspended render`;
     case "ReactReturnElement":
       return `Component render returned a new component`;
     case "ReactCreateElement":
       return `Component render created a new component`;
+    case "ReactExternalStoreRerender":
+      return `A store external to React triggered a rerender`;
     case "ReactCallUseEffect":
       return `Component render called useEffect()`;
     case "ReactEffectFirstCall":
       return `Effect function called for the first time`;
     case "ReactCallSetState":
       return `Script called setState()`;
+    case "ReactRenderCommit":
+      return `A change triggered a React render which was later committed`;
   }
   return "Entry: " + step.code;
 }
