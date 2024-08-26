@@ -12,6 +12,10 @@ function getDescription(step: DependencyChainStep): string {
       return `Executed a script blocked by other resources`;
     case "DocumentInitiateNetworkRequest":
       return `Request started for a document URL`;
+    case "DocumentAsyncCompileScript":
+      return `Script was scheduled for asynchronous compilation`;
+    case "DocumentExecuteScript":
+      return `Script started executing`;
     case "NetworkReceiveData":
       return `Received ${step.numBytes} bytes of data`;
     case "NetworkReceiveResource":

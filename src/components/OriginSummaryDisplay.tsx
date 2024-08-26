@@ -34,6 +34,7 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
     mainThreadTime,
     workerThreadTime,
     timerTime,
+    unknownTime,
     reactSliceTime,
     numNetworkRoundTrips,
     origin,
@@ -41,9 +42,6 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
     originMouseLocation,
     commitScreenShot,
   } = summary;
-
-  assert(!workerThreadTime);
-  assert(!timerTime);
 
   const timeRender = (reactSliceTime["SyncRender"] ?? 0) + (reactSliceTime["ConcurrentRender"] ?? 0);
   const timeCommit = reactSliceTime["Commit"] ?? 0;
@@ -58,6 +56,8 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
 
   const commitScreenShotElement = <ExpandableScreenShot title="After" scaledScreenShot={commitScreenShot} mouseLocation={undefined}></ExpandableScreenShot>;
 
+  const otherTime = workerThreadTime + timerTime + unknownTime;
+
   return <span>
     <div className="OriginTitle">{ title }</div>
     {originScreenShotElement}
@@ -69,6 +69,7 @@ export function OriginSummaryDisplay(props: OriginSummaryProps) {
     <div className="SummaryEntry">{"Network: " + formatTime(networkTime)}</div>
     <div className="SummaryEntry">{"Main Thread: " + formatTime(mainThreadTime)}</div>
     <div className="SummaryEntry">{"Scheduling: " + formatTime(schedulingTime)}</div>
+    <div className="SummaryEntry">{"Other: " + formatTime(otherTime)}</div>
 
     <div className="SummaryTitle">Network</div>
     <div className="SummaryEntry">{"Round Trips: " + numNetworkRoundTrips}</div>
